@@ -1,0 +1,21 @@
+# s1 = a
+# s2 = i
+# s3 = r
+
+loop:	beq	s2, s1, exit	# if(i == a) goto exit
+
+	andi	s4, s2, 0xA5	# s4 = (s2 & 0xA5)
+	beq	s4, x0, else	# if(s4 == x0) goto else
+	slli	s5, s2, 8	# s5 = i << 8
+	xor	s3, s3, s5	# r ^= s5
+	
+	addi	s2, s2, 1	# i += 1
+	beq	x0, x0, loop	# goto loop
+	
+else:	srli	s5, s2, 4	# s5 i >> 4
+	add	s3, s3, s5	# i += s5
+	
+	addi	s2, s2, 1	# i += 1
+	beq	x0, x0, loop	# goto loop
+
+exit:

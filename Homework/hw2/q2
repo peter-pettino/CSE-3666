@@ -1,0 +1,38 @@
+	.data
+
+buf:    .space  512
+
+        .text
+main:
+        lui     s9, 0x10010
+
+	addi	s0, x0, 0	# i = 0
+	addi	s1, x0, 0	# j = 0
+	addi	s2, x0, 16	# s2 = 16
+	addi	s3, x0, 8	# s3 = 8
+	
+loop1:	beq	s0, s2, exit	# if(i == 16) goto exit
+	
+	blt	s1, s3, loop2	# if (j < 8) goto loop2
+	addi	s1, x0,	0	# j = 0
+	
+	addi	s0, s0, 1	# i += 1
+	beq	x0, x0, loop1	# goto loop1
+
+loop2:	beq	s1, s3, loop1	# if(j == 8) goto loop1
+
+	slli	t0, s0, 5	# t0 = i * 32
+	slli	t1, s1, 2	# t1 = j * 4
+	
+	add	t2, t0, t1	# t2 += (32i + 4j)
+	add 	t2, t2, s9	# t2 += s9
+	
+	slli 	t3, s0, 8	# t3 = i * 256
+	add	t3, t3, s1	# t3 += j
+	
+	sw	t3, 0(t2)	# save t3 to address of t2
+
+	addi	s1, s1, 1	# j += 1
+	beq	x0, x0, loop2	# goto loop2
+
+exit:
