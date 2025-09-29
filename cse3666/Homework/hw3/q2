@@ -1,0 +1,46 @@
+msort:	addi	sp, sp, -12	# allocate 8 bytes of memory
+	sw	ra, 8(sp)	# save return address to stack
+	sw	s1, 4(sp)	# save n to stack
+	sw	s0, 0(sp)	# save d to stack
+	
+	addi	sp, sp, -1028	# allocate 257 bytes
+	sw	s3, 0(sp)	# save s3 to stack
+
+	blt	x1, a1, skip	# if(1 < n) goto skip
+	
+	lw	ra, 8(sp)	# load ra from stack
+	lw	s1, 4(sp)	# load n from stack
+	lw	s0, 0(sp)	# load d from stack
+	addi	sp, sp, 12	# adjust stack pointer
+	
+	lw	s3, 0(sp)	# load s3 from stack
+	addi	sp, sp, 1028	# adjust stack pointer
+	
+	jalr	x0, ra, 0	# return
+	
+skip:	add	s0, x0, a0	# s0 = d
+	add	s1, x0, a1	# s1 = n
+	srli	s2, s1, 1	# n1 = n / 2
+				# s3 = c
+	slli	s4, s2, 2	# &n1
+
+
+	add	a0, x0, s0	# a0 = d
+	add	a1, x0, s2	# a1 = n1
+	jal	ra, msort	# msort(d, n1)
+	
+	add	a0, s0,	s4	# a0 = &d[n1]
+	sub	a1, s1, s2	# a1 = n - n1
+	jal	ra, msort	# msort(&d[n1], n-n1)
+	
+	add	a0, x0,	s3	# a0 = c
+	add	a1, x0, s0	# a1 = d
+	add	a2, x0, s2	# a2 = n1
+	add	a3, s0, s4	# a3 = &d[n1]
+	sub	a4, s1, s2	# a4 = n - n1
+	jal	ra, merge	# merge(c, d, n1, &d[n1], n-n1)
+	
+	add	a0, x0, s0	# a0 = d
+	add	a1, x0, s3	# a1 = c
+	add	a2, x0, s1	# a2 = n
+	jal	ra, copy	# copy(d, c, n)

@@ -1,0 +1,38 @@
+# s1 = count
+# s2 = i
+
+foo:	addi	sp, sp, -20	# allocate 20 bytes of memory
+	sw	ra, 0(sp)	# save return address to stack
+	sw	a0, 4(sp)	# save a0 to stack
+	sw	a1, 8(sp)	# save a1 to stack
+	sw	s3, 12(sp)	# save &d[i] to stack
+	sw	s2, 16(sp)	# save s2 to stack
+	 
+
+	add	s1, x0, x0	# count = 0
+	add	s2, x0, x0	# i = 0
+	
+loop:	beq	s2, a1, f_exit	# if (i == n) goto f_exit
+
+	slli	t0, s2, 2	# t0 = s2 * 4
+	add	s3, a0, t0
+	add	a0, x0, s3	# &d[i]
+	sub	a1, a1, s2	# n - i
+	jal	ra, bar		# bar(&d[i], n-i)
+	
+	bge	x0, a0, skip	# if(0 >= t) goto skip
+	addi	s1, s1, 1	# count += 1
+	
+	
+skip:	addi	s2, s2, 1	# i += 1
+	beq	x0, x0, loop	# goto loop
+	
+f_exit:	
+	lw	ra, 0(sp)	# load return address from stack
+	lw	a0, 4(sp)	# load a0 from stack
+	lw	a1, 8(sp)	# load a1 from stack
+	lw	s3, 12(sp)	# load s3 from stack
+	lw	s2, 16(sp)	# load s2 from stack
+	addi	sp, sp, 20	# adjust stack pointer
+
+	jalr	x0, ra, 0	# return

@@ -1,0 +1,15 @@
+# a)
+main:   addi	s4, x0, 100	# s4 = 100
+	addi	s1, x0, 0	# initialize counter s1 = 0
+
+loop:	slli	t0, s1, 2	# calculate offset (multiply counter by 4)
+	
+	add	t2, t0, s2	# calculate offset for s2, store in t2
+	lw	t1, 0(t2)	# load word from t2 address to t1
+	addi	t1, t1, 4	# add 4 to t1
+	
+	add	t2, t0, s3	# calculate offset for s3, store in t2
+	sw	t1, 0(t2)	# store t1 to address of t2
+	
+	addi	s1, s1, 1	# s1 += 1
+	bne	s1, s4	loop	# if(s1 != s4) goto loop
